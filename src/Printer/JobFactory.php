@@ -68,7 +68,7 @@ class JobFactory implements IJobFactory {
 		$layout = new FileLoader();
 
 		$template = $this->getTemplateStorage()->getTemplate($id);
-		$preview = count($objIds) ? new PreviewEntity($template->getClass()) : FALSE;
+		$preview = !count($objIds) ? new PreviewEntity($template->getClass()) : FALSE;
 		$entities = $preview
 			? ArrayHash::from([$preview])
 			: $this->getEntityStorage()->findEntities($template->getClass(), ArrayHash::from($objIds));
