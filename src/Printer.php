@@ -53,8 +53,6 @@ class Printer {
 	 */
 	public function printJob(Job $job) {
 		$this->getPresenter()->sendResponse($job);
-		//echo $job->render();
-		//throw new AbortException();
 	}
 
 	/**
