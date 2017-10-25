@@ -1,0 +1,21 @@
+{
+	"name": "holabs/printer",
+	"description": "Printing package for Nette framework",
+	"keywords": ["printer", "nette"],
+	"license": ["BSD-3-Clause", "GPL-2.0", "GPL-3.0"],
+	"authors": [
+		{
+			"name": "Tomáš Holan",
+			"homepage": "https://tomasholan.eu"
+		}
+	],
+	"require": {
+		"php": ">=7.1",
+		"nette/utils": "^2.4"
+	},
+	"suggest": {
+	},
+	"autoload": {
+		"classmap": ["src"]
+	}
+}

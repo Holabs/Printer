@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="robots" content="noindex, nofollow">
+	<meta name="date" content="{time()|date: 'd.m. Y'}">
+	<meta http-equiv="Expires" content="0">
+	<meta http-equiv="Pragma" content="no-cache">
+	<meta http-equiv="Cache-Control" content="no-cache">
+	{block head}{/block}
+
+	<title>{$name}</title>
+	<style n:syntax="double">
+
+		body {
+			background: {{$background|noescape}};
+			border: none;
+			margin: 0;
+			padding: 0;
+			float: none;
+		}
+
+		@page {
+			size: {{$size}};
+			margin: {{$margin|noescape}};
+		}
+
+		section,
+		.page-break,
+		.page-break-after {
+			float: none;
+			display: block; /** This have to be for get it working */
+			break-after: page;
+			page-break-after: always;
+		}
+
+		.page-break-before {
+			float: none;
+			display: block; /** This have to be for get it working */
+			break-before: page;
+			page-break-before: always;
+		}
+
+		h1, h2, h3, h4, h5, h6 {
+			page-break-after: avoid;
+		}
+
+		header,
+		footer,
+		#header,
+		#footer {
+			position: fixed;
+			bottom: 0;
+			left: 0;
+			right: 0;
+		}
+
+		.page-number {
+			display: block;
+		}
+
+		.page-number:after {
+			content: counter(page);
+			display: inline;
+		}
+
+	</style>
+
+	{block styles}{/block}
+
+	<script n:if="$isAutoPrintEnabled">
+		window.onload = window.print();
+	</script>
+</head>
+<body>
+		{block header}{/block}
+		{foreach $entities as $entity}
+			{include content 'iterator' => $iterator, 'entity' => $entity, 'options' => $options}
+		{/foreach}
+		{block footer}{/block}
+</body>
+</html>
