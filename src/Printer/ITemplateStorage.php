@@ -12,9 +12,9 @@ namespace Holabs\Printer;
 interface ITemplateStorage {
 
 	/**
-	 * @param string $id
+	 * @param mixed $id
 	 * @return ITemplate
 	 */
-	public function getTemplate(string $id): ITemplate;
+	public function getTemplate($id): ITemplate;
 
 }

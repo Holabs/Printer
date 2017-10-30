@@ -12,9 +12,9 @@ namespace Holabs\Printer;
 interface ITemplate {
 
 	/**
-	 * @return string
+	 * @return mixed
 	 */
-	public function getId(): string;
+	public function getId();
 
 	/**
 	 * @return string

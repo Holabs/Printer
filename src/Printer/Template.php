@@ -11,7 +11,7 @@ namespace Holabs\Printer;
  */
 class Template implements ITemplate {
 
-	/** @var string */
+	/** @var mixed */
 	private $id;
 
 	/** @var string */
@@ -28,13 +28,13 @@ class Template implements ITemplate {
 
 	/**
 	 * Template constructor.
-	 * @param string $id
+	 * @param mixed $id
 	 * @param string $name
 	 * @param string $class
 	 * @param array  $options
 	 * @param string $source
 	 */
-	public function __construct(string $id, string $name, string $class, array $options, string $source) {
+	public function __construct($id, string $name, string $class, array $options, string $source) {
 		$this->id = $id;
 		$this->name = $name;
 		$this->class = $class;
@@ -46,7 +46,7 @@ class Template implements ITemplate {
 	/**
 	 * @return string
 	 */
-	public function getId(): string {
+	public function getId() {
 		return $this->id;
 	}
 
