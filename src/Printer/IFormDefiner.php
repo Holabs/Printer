@@ -6,11 +6,14 @@ namespace Holabs\Printer;
 
 /**
  * @author       Tomáš Holan <mail@tomasholan.eu>
- * @package      holabs/printer
+ * @package      holabs/print
  * @copyright    Copyright © 2017, Tomáš Holan [www.tomasholan.eu]
  */
-interface IJobFactory {
+interface IFormDefiner {
 
-	public function create(string $id, int ... $objIds): Job;
+	/**
+	 * @return array
+	 */
+	public function getFormDefinition(): array;
 
 }

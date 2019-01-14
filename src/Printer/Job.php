@@ -4,40 +4,57 @@
 namespace Holabs\Printer;
 
 use Latte\Engine;
-use Latte\Loaders\StringLoader;
 use Nette\Application\IResponse;
+use Nette\Application\UI\Form;
 use Nette\Http\IRequest;
 use Nette\Http\IResponse as IHttpResponse;
+use Nette\SmartObject;
 
 
 /**
  * @author       Tomáš Holan <mail@tomasholan.eu>
  * @package      holabs/printer
  * @copyright    Copyright © 2017, Tomáš Holan [www.tomasholan.eu]
+ *
+ * @method onReady(Job $sender) Occurs when job is ready to print after user input if any - CHECK isReady before
  */
 class Job implements IResponse {
+
+	use SmartObject;
+
+	/** @var \Closure[]|callable[] */
+	public $onReady = [];
 
 	/** @var Engine */
 	private $engine;
 
-	/** @var string */
-	private $layout;
+	/** @var Form|null */
+	private $form;
 
 	/** @var array */
 	private $params;
 
 	/** @var string|null */
-	private $source = NULL;
+	private $source = null;
 
-	/** @var ITemplate */
-	private $template;
+	/** @var bool */
+	private $ready = FALSE;
 
 
-	public function __construct(ITemplate $template, string $layout, array $params = []) {
-		$this->engine = new Engine();
-		$this->layout = $layout;
-		$this->template = $template;
+	public function __construct(Engine $engine, ?Form $form = null, array $params = []) {
+		$this->engine = $engine;
+		$this->form = $form;
 		$this->params = $params;
+		if ($form !== null) {
+			$this->params['input'] = $form->getValues(); // Prefill user input with form defaults
+			$form->onSuccess[] = function(Form $form) {
+				$this->params['input'] = $form->getValues();
+				$this->ready = TRUE;
+				$this->onReady($this);
+			};
+		} else {
+			$this->ready = TRUE;
+		}
 	}
 
 	/**
@@ -55,17 +72,24 @@ class Job implements IResponse {
 	}
 
 	/**
-	 * @return string
+	 * @return bool
 	 */
-	public function getLayout(): string {
-		return $this->layout;
+	public function isReady(): bool {
+		return $this->ready;
 	}
 
 	/**
-	 * @return ITemplate
+	 * @return Form|null
 	 */
-	public function getTemplate(): ITemplate {
-		return $this->template;
+	public function getForm(): ?Form {
+		return $this->form;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function hasForm(): bool {
+		return $this->getForm() !== NULL;
 	}
 
 	/**
@@ -100,18 +124,6 @@ class Job implements IResponse {
 	 * Generate final source code from templates
 	 */
 	private function generate() {
-
-		$latte = $this->getEngine();
-		$latte->setLoader(
-			new StringLoader(
-				[
-					'template' => '{extends layout}' . $this->getTemplate()->getSource(),
-					'layout'   => $this->getLayout()
-				]
-			)
-		);
-
-
-		$this->source = $latte->renderToString('template', $this->getParams());
+		$this->source = $this->getEngine()->renderToString('template', $this->getParams());
 	}
 }

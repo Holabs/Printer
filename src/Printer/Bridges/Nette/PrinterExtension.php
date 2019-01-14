@@ -4,7 +4,6 @@ namespace Holabs\Printer\Bridges\Nette;
 
 use Holabs\Printer;
 use Holabs\Printer\Configuration;
-use Holabs\Printer\JobFactory;
 use Nette\DI\Extensions\ExtensionsExtension;
 
 
@@ -44,15 +43,13 @@ class PrinterExtension extends ExtensionsExtension {
 		$this->validateConfig($this->defaults);
 		$config = $this->getConfig();
 
-		$configuration = new Configuration($config['layout'], $config['auto-print'], $config['params']);
-
 		$builder = $this->getContainerBuilder();
+
+		$builder->addDefinition($this->prefix('configuration'))
+			->setFactory(Configuration::class, [$config['layout'], $config['auto-print'], $config['params']]);
 
 		$builder->addDefinition($this->prefix('service'))
 			->setFactory(Printer::class);
-
-		$builder->addDefinition($this->prefix('factories.job'))
-			->setFactory(JobFactory::class, [$configuration]);
 	}
 
 }

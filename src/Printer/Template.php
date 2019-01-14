@@ -72,6 +72,13 @@ class Template implements ITemplate {
 	}
 
 	/**
+	 * @return array
+	 */
+	public function getFormDefinition(): array {
+		return $this->getOptions()['form'] ?? [];
+	}
+
+	/**
 	 * @return string
 	 */
 	public function getSource(): string {

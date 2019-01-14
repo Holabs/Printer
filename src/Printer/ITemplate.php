@@ -9,7 +9,7 @@ namespace Holabs\Printer;
  * @package      holabs/printer
  * @copyright    Copyright © 2017, Tomáš Holan [www.tomasholan.eu]
  */
-interface ITemplate {
+interface ITemplate extends IFormDefiner{
 
 	/**
 	 * @return mixed

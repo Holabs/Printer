@@ -3,12 +3,18 @@
 
 namespace Holabs;
 
-use Holabs\Printer\IJobFactory;
+use Holabs\Printer\Configuration;
+use Holabs\Printer\Helpers;
+use Holabs\Printer\IEntityStorage;
+use Holabs\Printer\IFormGenerator;
+use Holabs\Printer\ITemplateStorage;
 use Holabs\Printer\Job;
-use Nette\Application\AbortException;
-use Nette\Application\Application;
-use Nette\Application\UI\Presenter;
-use Nette\SmartObject;
+use Holabs\Printer\PreviewEntity;
+use Latte\Loaders\FileLoader;
+use Latte\Loaders\StringLoader;
+use Nette\Application\UI\ITemplateFactory;
+use Nette\Bridges\ApplicationLatte\TemplateFactory;
+use Nette\Utils\ArrayHash;
 
 
 /**
@@ -16,58 +22,97 @@ use Nette\SmartObject;
  * @package      holabs/printer
  * @copyright    Copyright © 2017, Tomáš Holan [www.tomasholan.eu]
  */
-class Printer {
+class Printer implements IPrinter {
 
-	use SmartObject;
+	/** @var Configuration */
+	private $config;
 
-	/** @var IJobFactory */
-	private $jobFactory;
+	/** @var IEntityStorage */
+	private $entityStorage;
 
-	/** @var Presenter */
-	private $presenter;
+	/** @var ITemplateStorage */
+	private $templateStorage;
 
-	/**
-	 * Printer constructor.
-	 * @param Application $application
-	 * @param IJobFactory $jobFactory
-	 */
-	public function __construct(Application $application, IJobFactory $jobFactory) {
-		$this->jobFactory = $jobFactory;
-		$application->onPresenter[] = function(Application $sender, Presenter $presenter) {
-			$this->presenter = $presenter;
-		};
+	/** @var ITemplateFactory|TemplateFactory */
+	private $templateFactory;
+
+	/** @var IFormGenerator */
+	private $formGenerator;
+
+	public function __construct(
+		Configuration $config,
+		IEntityStorage $entityStorage,
+		ITemplateStorage $templateStorage,
+		ITemplateFactory $templateFactory,
+		IFormGenerator $formGenerator = NULL
+	) {
+		$this->config = $config;
+		$this->entityStorage = $entityStorage;
+		$this->templateStorage = $templateStorage;
+		$this->templateFactory = $templateFactory;
+		$this->formGenerator = $formGenerator;
 	}
 
 	/**
-	 * @param string $id
-	 * @param int[]  $objIds
+	 * @return IEntityStorage
+	 */
+	public function getEntityStorage(): IEntityStorage {
+		return $this->entityStorage;
+	}
+
+	/**
+	 * @return ITemplateStorage
+	 */
+	public function getTemplateStorage(): ITemplateStorage {
+		return $this->templateStorage;
+	}
+
+	/**
+	 * @param $id
+	 * @param $objIds
 	 * @return Job
 	 */
-	public function createJob(string $id, int ... $objIds): Job {
-		return $this->getJobFactory()->create($id, ... $objIds);
+	public function createJob($id, ... $objIds): Job {
+
+		$objIds = array_unique($objIds);
+
+		$layout = (new FileLoader())->getContent($this->getConfig()->getLayoutPath());
+
+		$template = $this->getTemplateStorage()->getTemplate($id);
+		$form = $this->formGenerator !== NULL ? $this->formGenerator->generate($template) : NULL;
+		$preview = !count($objIds) ? new PreviewEntity($template->getClass()) : FALSE;
+		$entities = $preview
+			? [$preview]
+			: $this->getEntityStorage()->findEntities($template->getClass(), $objIds);
+		$params = [];
+		$options = Helpers::validateOptions($this->getConfig()->getDefaultParams(), $template->getOptions());
+		$params['background'] = $options['background'];
+		$params['margin'] = $options['margin'];
+		$params['size'] = $options['size'];
+		$params['isAutoPrintEnabled'] = $this->getConfig()->isAutoPrintEnabled();
+		$params['template'] = $template;
+		$params['name'] = $template->getName();
+		$params['entities'] = $entities;
+		$params['options'] = $options;
+
+		$engine = $this->templateFactory->createTemplate()->getLatte()->setLoader(
+			new StringLoader(
+				[
+					'template' => '{extends layout}' . $template->getSource(),
+					'layout'   => $layout
+				]
+			)
+		);
+
+
+		return new Job($engine, $form, $params);
 	}
 
 	/**
-	 * @param Job $job
-	 * @throws AbortException
+	 * @return Configuration
 	 */
-	public function printJob(Job $job) {
-		$this->getPresenter()->sendResponse($job);
-	}
-
-	/**
-	 * @return IJobFactory
-	 */
-	protected function getJobFactory(): IJobFactory {
-		return $this->jobFactory;
-	}
-
-
-	/**
-	 * @return Presenter
-	 */
-	protected function getPresenter(): Presenter {
-		return $this->presenter;
+	protected function getConfig(): Configuration {
+		return $this->config;
 	}
 
 }

@@ -1,19 +1,18 @@
 <?php
 
 
-namespace Holabs\Printer;
+namespace Holabs;
 
-use ArrayAccess;
-use Nette\Utils\ArrayHash;
 
+use Holabs\Printer\Job;
 
 /**
  * @author       Tomáš Holan <mail@tomasholan.eu>
  * @package      holabs/printer
  * @copyright    Copyright © 2017, Tomáš Holan [www.tomasholan.eu]
  */
-interface IEntityStorage {
+interface IPrinter {
 
-	public function findEntities(string $class, array $ids): array;
+	public function createJob(string $id, ... $objIds): Job;
 
 }
