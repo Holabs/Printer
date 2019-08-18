@@ -68,14 +68,14 @@ class FormGenerator implements IFormGenerator {
 	protected function addText(Container $container, string $name, array $options) {
 		$container->addText($name, $options[self::OPTION_LABEL] ?? null)
 			->setRequired($options[self::OPTION_REQUIRED] ?? false)
-			->setNullable((bool) $options[self::OPTION_NULLABLE] ?? false)
+			->setNullable($options[self::OPTION_NULLABLE] ?? false)
 			->setAttribute('placeholder',$options[self::OPTION_PLACEHOLDER] ?? false);
 	}
 
 	protected function addPassword(Container $container, string $name, array $options) {
 		$container->addPassword($name, $options[self::OPTION_LABEL] ?? null)
 			->setRequired($options[self::OPTION_REQUIRED] ?? false)
-			->setNullable((bool) $options[self::OPTION_NULLABLE] ?? false)
+			->setNullable($options[self::OPTION_NULLABLE] ?? false)
 			->setAttribute('placeholder',$options[self::OPTION_PLACEHOLDER] ?? false);
 	}
 
@@ -88,14 +88,14 @@ class FormGenerator implements IFormGenerator {
 	protected function addEmail(Container $container, string $name, array $options) {
 		$container->addEmail($name, $options[self::OPTION_LABEL] ?? null)
 			->setRequired($options[self::OPTION_REQUIRED] ?? false)
-			->setNullable((bool) $options[self::OPTION_NULLABLE] ?? false)
+			->setNullable($options[self::OPTION_NULLABLE] ?? false)
 			->setAttribute('placeholder',$options[self::OPTION_PLACEHOLDER] ?? false);
 	}
 
 	protected function addInteger(Container $container, string $name, array $options) {
 		$container->addInteger($name, $options[self::OPTION_LABEL] ?? null)
 			->setRequired($options[self::OPTION_REQUIRED] ?? false)
-			->setNullable((bool) $options[self::OPTION_NULLABLE] ?? false)
+			->setNullable($options[self::OPTION_NULLABLE] ?? false)
 			->setAttribute('placeholder',$options[self::OPTION_PLACEHOLDER] ?? false);
 	}
 
