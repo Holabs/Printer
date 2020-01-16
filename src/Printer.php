@@ -12,9 +12,9 @@ use Holabs\Printer\Job;
 use Holabs\Printer\PreviewEntity;
 use Latte\Loaders\FileLoader;
 use Latte\Loaders\StringLoader;
+use Nette\Application\LinkGenerator;
 use Nette\Application\UI\ITemplateFactory;
 use Nette\Bridges\ApplicationLatte\TemplateFactory;
-use Nette\Utils\ArrayHash;
 
 
 /**
@@ -36,7 +36,10 @@ class Printer implements IPrinter {
 	/** @var ITemplateFactory|TemplateFactory */
 	private $templateFactory;
 
-	/** @var IFormGenerator */
+	/** @var LinkGenerator|null */
+	private $linkGenerator;
+
+	/** @var IFormGenerator|null */
 	private $formGenerator;
 
 	public function __construct(
@@ -44,12 +47,14 @@ class Printer implements IPrinter {
 		IEntityStorage $entityStorage,
 		ITemplateStorage $templateStorage,
 		ITemplateFactory $templateFactory,
-		IFormGenerator $formGenerator = NULL
+		LinkGenerator $linkGenerator = null,
+		IFormGenerator $formGenerator = null
 	) {
 		$this->config = $config;
 		$this->entityStorage = $entityStorage;
 		$this->templateStorage = $templateStorage;
 		$this->templateFactory = $templateFactory;
+		$this->linkGenerator = $linkGenerator;
 		$this->formGenerator = $formGenerator;
 	}
 
@@ -94,6 +99,7 @@ class Printer implements IPrinter {
 		$params['name'] = $template->getName();
 		$params['entities'] = $entities;
 		$params['options'] = $options;
+		$params['linker'] = $this->linkGenerator;
 
 		$engine = $this->templateFactory->createTemplate()->getLatte()->setLoader(
 			new StringLoader(
