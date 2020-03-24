@@ -14,5 +14,6 @@ use Holabs\Printer\Job;
 interface IPrinter {
 
 	public function createJob(string $id, ... $objIds): Job;
+	public function createJobFromEntities($id, ... $entities): Job;
 
 }

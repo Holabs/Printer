@@ -85,7 +85,7 @@ class Printer implements IPrinter {
 		$template = $this->getTemplateStorage()->getTemplate($id);
 		$entities = !count($objIds) ? [] : $this->getEntityStorage()->findEntities($template->getClass(), $objIds);
 
-		return $this->jobFactory($template, $entities);
+		return $this->jobFactory($template, ... $entities);
 	}
 
 	/**
@@ -97,7 +97,7 @@ class Printer implements IPrinter {
 
 		$entities = array_unique($entities);
 		$template = $this->getTemplateStorage()->getTemplate($id);
-		return $this->jobFactory($template, $entities);
+		return $this->jobFactory($template, ... $entities);
 	}
 
 
@@ -105,7 +105,7 @@ class Printer implements IPrinter {
 	protected function jobFactory(ITemplate $template, ... $entities) {
 
 		$layout = (new FileLoader())->getContent($this->getConfig()->getLayoutPath());
-		$entities = !count($entities) ? new PreviewEntity($template->getClass()) : $entities;
+		$entities = !count($entities) ? [new PreviewEntity($template->getClass())] : $entities;
 		$form = $this->formGenerator !== NULL ? $this->formGenerator->generate($template) : NULL;
 
 		$params = [];
