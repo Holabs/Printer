@@ -7,6 +7,7 @@ use Holabs\Printer\Configuration;
 use Holabs\Printer\Helpers;
 use Holabs\Printer\IEntityStorage;
 use Holabs\Printer\IFormGenerator;
+use Holabs\Printer\ITemplate;
 use Holabs\Printer\ITemplateStorage;
 use Holabs\Printer\Job;
 use Holabs\Printer\PreviewEntity;
@@ -81,14 +82,32 @@ class Printer implements IPrinter {
 
 		$objIds = array_unique($objIds);
 
-		$layout = (new FileLoader())->getContent($this->getConfig()->getLayoutPath());
-
 		$template = $this->getTemplateStorage()->getTemplate($id);
+		$entities = !count($objIds) ? [] : $this->getEntityStorage()->findEntities($template->getClass(), $objIds);
+
+		return $this->jobFactory($template, $entities);
+	}
+
+	/**
+	 * @param string|int $id
+	 * @param object[] $entities
+	 * @return Job
+	 */
+	public function createJobFromEntities($id, ... $entities): Job {
+
+		$entities = array_unique($entities);
+		$template = $this->getTemplateStorage()->getTemplate($id);
+		return $this->jobFactory($template, $entities);
+	}
+
+
+
+	protected function jobFactory(ITemplate $template, ... $entities) {
+
+		$layout = (new FileLoader())->getContent($this->getConfig()->getLayoutPath());
+		$entities = !count($entities) ? new PreviewEntity($template->getClass()) : $entities;
 		$form = $this->formGenerator !== NULL ? $this->formGenerator->generate($template) : NULL;
-		$preview = !count($objIds) ? new PreviewEntity($template->getClass()) : FALSE;
-		$entities = $preview
-			? [$preview]
-			: $this->getEntityStorage()->findEntities($template->getClass(), $objIds);
+
 		$params = [];
 		$options = Helpers::validateOptions($this->getConfig()->getDefaultParams(), $template->getOptions());
 		$params['background'] = $options['background'];
