@@ -4,7 +4,7 @@ namespace Holabs\Printer\Bridges\Nette;
 
 use Holabs\Printer;
 use Holabs\Printer\Configuration;
-use Nette\DI\Extensions\ExtensionsExtension;
+use Nette\DI\CompilerExtension;
 
 
 /**
@@ -12,7 +12,7 @@ use Nette\DI\Extensions\ExtensionsExtension;
  * @package      holabs/printer
  * @copyright    Copyright © 2017, Tomáš Holan [www.tomasholan.eu]
  */
-class PrinterExtension extends ExtensionsExtension {
+class PrinterExtension extends CompilerExtension {
 
 	const DS = DIRECTORY_SEPARATOR;
 
