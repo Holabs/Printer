@@ -116,7 +116,7 @@ class Job implements IResponse {
 	 * @param IHttpResponse $httpResponse
 	 * @return void
 	 */
-	public function send(IRequest $httpRequest, IHttpResponse $httpResponse) {
+	public function send(IRequest $httpRequest, IHttpResponse $httpResponse): void {
 		echo $this->render();
 	}
 
